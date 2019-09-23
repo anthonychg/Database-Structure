@@ -15,3 +15,20 @@ GO
 ALTER DATABASE [MYDB]
 SET RECOVERY SIMPLE WITH NO_WAIT
 GO
+USE		[master]
+GO
+CREATE DATABASE [DatabaseName] ON  PRIMARY 
+( NAME = N'DatabaseName_dat', FILENAME = N'D:\MSSQL\Data\DatabaseName_dat.mdf' , SIZE = 10240KB , MAXSIZE = UNLIMITED, FILEGROWTH = 10240KB ),
+ FILEGROUP [INDEX] 
+( NAME = N'DatabaseName_idx', FILENAME = N'D:\MSSQL\Indx\DatabaseName_idx.ndf' , SIZE = 10240KB , MAXSIZE = UNLIMITED, FILEGROWTH = 10240KB )
+ LOG ON 
+( NAME = N'DatabaseName_log', FILENAME = N'D:\MSSQL\Logs\DatabaseName_log.ldf' , SIZE = 10240KB , MAXSIZE = 2048GB , FILEGROWTH = 10240KB )
+GO
+
+CREATE DATABASE [DatabaseName] ON  PRIMARY 
+( NAME = N'DatabaseName_dat', FILENAME = N'D:\MSSQL\Data\DatabaseName_dat.mdf' , SIZE = 10240KB , MAXSIZE = UNLIMITED, FILEGROWTH = 10240KB ),
+ FILEGROUP [INDEX] 
+( NAME = N'DatabaseName_idx', FILENAME = N'D:\MSSQL\Indx\DatabaseName_idx.ndf' , SIZE = 10240KB , MAXSIZE = UNLIMITED, FILEGROWTH = 10240KB )
+ LOG ON 
+( NAME = N'DatabaseName_log', FILENAME = N'D:\MSSQL\Logs\DatabaseName_log.ldf' , SIZE = 10240KB , MAXSIZE = 2048GB , FILEGROWTH = 10240KB )
+GO
