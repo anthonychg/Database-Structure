@@ -19,6 +19,31 @@ ALTER DATABASE <DatabaseName>
 SET MULTI_USER
 GO
 
+--------------------------------------------------------
+--https://www.mssqltips.com/sqlservertip/4935/optimize-sql-server-database-restore-performance
+--https://social.msdn.microsoft.com/Forums/sqlserver/en-US/a17cac4b-cf5d-4d90-9498-8335d21129d2/sql-server-maxtransfersize?forum=sqlkjmanageability
+--https://www.sqlservercentral.com/blogs/optimizing-sql-server-backup-and-restore
+
+DBCC TRACEON(3213,-1)
+DBCC TRACEON(3605,-1)
+
+RESTORE DATABASE DatabaseName FROM DISK= N'F:\DataLoadingStaging\DatabaseName\iWBDatabaseFullBackup_AftOvn_20200104.bak'  
+WITH REPLACE,   FILE=1, NOUNLOAD, STATS=5,
+MOVE N'pdenvcu_Data' TO N'F:\Data\DatabaseName_Data.mdf' ,  
+MOVE N'pdenvcu_Log' TO N'G:\Logs\DatabaseName_Log.ldf'
+
+DECLARE		@dtfromdate DATETIME= DATEADD(HOUR,-1,GETDATE()),
+					@dtTodate DATETIME = GETDATE()
+EXEC xp_ReadErrorLog 0, 1, NULL, NULL, @dtfromdate, @dtTodate
+
+
+RESTORE DATABASE DatabaseName FROM DISK= N'F:\DataLoadingStaging\DatabaseName\iWBDatabaseFullBackup_AftOvn_20200104.bak'  
+WITH REPLACE,   FILE=1, NOUNLOAD, STATS=5, MAXTRANSFERSIZE = 4194302, BUFFERCOUNT = 26,
+MOVE N'pdenvcu_Data' TO N'F:\Data\DatabaseName_Data.mdf' ,  
+MOVE N'pdenvcu_Log' TO N'G:\Logs\DatabaseName_Log.ldf'
+
+
+--------------------------------------------------------
 --RESTORE FULL DATABASE ON STANDBY
 RESTORE DATABASE DatabaseName FROM DISK= N'H:\DataLoadingStaging\DatabaseName\iWBDatabaseFullBackup_AftOvn_20160416.bak' 
 WITH FILE = 1,  
