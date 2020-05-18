@@ -1,7 +1,45 @@
-USE		--[master]
+USE  master
 GO
--------------------------------
+DBCC SQLPERF(logspace)
+--Database Name   Log Size (MB) Log Space Used (%) Status
+--DataIntegrationEngine 505.0547    1.924297 0
+GO
+USE  DataIntegrationEngine
+GO
+EXEC sp_spaceused
+--database_name   database_size unallocated space
+--DataIntegrationEngine 14816.13 MB  0.95 MB
+--reserved   data   index_size  unused
+--14653552 KB   11220224 KB  3387184 KB  46144 KB
+USE DataIntegrationEngine
+GO
+SELECT DB_NAME() AS DbName, 
+name AS FileName, 
+size/128.0 AS CurrentSizeMB,
+(size/128.0)/1024  AS CurrentSizeGB,
+size/128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)/128.0 AS FreeSpaceMB
+FROM sys.database_files;
 --
+--
+--DbName     FileName     CurrentSizeMB FreeSpaceMB
+--DataIntegrationEngine  DataIntegrationEngine  14311.062500 0.625000
+--DataIntegrationEngine  DataIntegrationEngine_log 505.062500  495.078125
+USE master
+--https://blog.sqlauthority.com/2010/02/08/sql-server-find-the-size-of-database-file-find-the-size-of-log-file/
+SELECT DB_NAME(database_id) AS DatabaseName,
+Name AS Logical_Name,
+Physical_Name, 
+(size*8)/1024 SizeMB,
+((size*8)/1024.0)/1024 SizeGB
+FROM sys.master_files
+WHERE DB_NAME(database_id) = 'DataIntegrationEngine'
+GO
+--DatabaseName   Logical_Name    Physical_Name       SizeMB
+--DataIntegrationEngine DataIntegrationEngine  E:\Data\DataIntegrationEngine_Data.MDF 14311
+--DataIntegrationEngine DataIntegrationEngine_log F:\Logs\DataIntegrationEngine_Log.LDF 505
+
+------------------------------
+
 ALTER DATABASE ODS_WB_BANKING
 SET RECOVERY SIMPLE WITH NO_WAIT
 GO
